@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Popconfirm, Button, Space, Form, Input } from "antd";
-import { isEmpty } from "lodash";
+import {
+  Table,
+  Popconfirm,
+  Button,
+  Space,
+  Form,
+  Input,
+  Typography,
+  Pagination
+} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faSave, faTimes, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+const { Title } = Typography;
 
-
-const DataTable = () => {
+const APITable = () => {
   const [gridData, setGridData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingKey, setEditingKey] = useState("");
@@ -42,11 +50,6 @@ const DataTable = () => {
   const modifiedData = gridData.map(({ body, ...item }) => ({
     ...item,
     key: item.id,
-    // info: `My name is ${item.email.split("@")[0]} and i am ${
-    //   Math.floor(Math.random() * 6) + 20
-    // } year old`,
-    // age: Math.floor(Math.random() * 6) + 20,
-    comment: isEmpty(body) ? item.comment : body,
   }));
 
   console.log("modifiedData", modifiedData);
@@ -199,7 +202,7 @@ const DataTable = () => {
     {
       title: "ID",
       dataIndex: "id",
-      align: "center"
+      align: "center",
     },
     {
       title: "Name",
@@ -238,7 +241,7 @@ const DataTable = () => {
               onConfirm={() => handleDelete(record)}
             >
               <Button disabled={editable} danger>
-              <FontAwesomeIcon icon={faTrash} color=""/> 
+                <FontAwesomeIcon icon={faTrash} color="" />
               </Button>
             </Popconfirm>
             {editable ? (
@@ -257,9 +260,8 @@ const DataTable = () => {
                 </Space>
               </span>
             ) : (
-              <Button onClick={() => edit(record)} >
-                <FontAwesomeIcon icon={faEdit} color="#0080FF"/>
-                
+              <Button onClick={() => edit(record)}>
+                <FontAwesomeIcon icon={faEdit} color="#0080FF" />
               </Button>
             )}
           </Space>
@@ -303,23 +305,34 @@ const DataTable = () => {
 
   const globalSearch = () => {
     filteredData = modifiedData.filter((value) => {
-      const name = (value.name || '').toLowerCase();
-      const email = (value.email || '').toLowerCase();
-      const comment = (value.comment || '').toLowerCase();
-  
+      const name = (value.name || "").toLowerCase();
+      const email = (value.email || "").toLowerCase();
+      const comment = (value.comment || "").toLowerCase();
+
       return (
         name.includes(searchText.toLowerCase()) ||
         email.includes(searchText.toLowerCase()) ||
         comment.includes(searchText.toLowerCase())
       );
     });
-  
+
     setGridData(filteredData);
   };
-  
+
   return (
     <div>
-      <Space style={{ marginBottom: 16 }}>
+      <Title
+        level={3}
+        style={{
+          marginBottom: 0,
+          marginTop: 10,
+          fontSize: "35px",
+          fontWeight: "bold",
+        }}
+      >
+        Tables with AIP
+      </Title>
+      <Space style={{ margin: 20 }}>
         <Input
           placeholder="Enter Search Text"
           onChange={handleSearch}
@@ -346,10 +359,17 @@ const DataTable = () => {
           bordered
           loading={loading}
           onChange={handleChange}
+          size="small"
+          pagination={{
+            position: ['bottomCenter'],
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '30', '40'],
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+          }}
         />
       </Form>
     </div>
   );
 };
 
-export default DataTable;
+export default APITable;
